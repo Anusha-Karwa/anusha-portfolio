@@ -4,15 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Anusha Karwa</title>
-<meta name="description" content="Anusha Karwa: computer science engineer, ex-Mastercard, PGP in Startup Leadership at Mesa. A paper boat carries her story down a river, from dawn to lantern-lit night.">
+<meta name="description" content="Anusha Karwa: computer science engineer, ex-Mastercard, PGP in Startup Leadership at Mesa. Her résumé as a cinematic title sequence in 3D gold.">
 <meta property="og:title" content="Anusha Karwa">
-<meta property="og:description" content="Computer science engineer, ex-Mastercard, PGP in Startup Leadership at Mesa. A 3D journey through her résumé.">
-<meta name="theme-color" content="#dccbc8">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 70'%3E%3Cpath d='M6 40 L114 40 L94 64 L26 64 Z M30 40 L60 4 L90 40' fill='none' stroke='%2317231d' stroke-width='6' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta property="og:description" content="Computer science engineer, ex-Mastercard, PGP in Startup Leadership at Mesa School of Business. Open to AI product roles.">
+<meta name="theme-color" content="#050304">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23050304'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Georgia,serif' font-style='italic' font-weight='700' font-size='34' fill='%23e3b25b'%3Eak.%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Manrope:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/css/film.css">
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
 </script>
@@ -21,97 +21,56 @@
 <canvas id="gl" aria-hidden="true"></canvas>
 
 <div id="loader" role="status">
-  <svg viewBox="0 0 120 70" aria-hidden="true">
-    <path d="M6 40 L114 40 L94 64 L26 64 Z"/>
-    <path d="M30 40 L60 4 L90 40"/>
-    <path d="M60 4 L60 40"/>
-  </svg>
-  <div class="lmeta" id="lstat">Folding a paper boat · 0%</div>
-  <h1>Anusha Karwa</h1>
-  <div class="enter" id="enter">
-    <button class="cta" id="go">Set it afloat</button>
-    <button class="cta ghost" id="goSound">With sound</button>
+  <p class="mono">A portfolio in motion</p>
+  <h1>Anusha <em>Karwa</em></h1>
+  <div class="lbar"><i></i></div>
+  <p class="mono" id="lstat">Casting the gold…</p>
+  <div class="enter">
+    <button class="cta" id="go">Play</button>
+    <button class="cta ghost" id="goSound">Play with sound</button>
   </div>
-  <button class="textlink" id="readerLink">Read the text version instead</button>
+  <button class="textlink" id="loaderResume">Read the résumé instead</button>
 </div>
 
-<header id="hdr">
-  <a class="brand" href="#" id="brand" aria-label="Back to the start">ak.</a>
-  <div class="chapter" aria-live="polite"><span id="chap">Dawn · The Source</span><div class="rail"><i id="rail"></i></div></div>
-  <div class="hbtns">
-    <button class="ibtn" id="resumeBtn">Résumé</button>
-    <button class="ibtn" id="snd" aria-pressed="false">Sound</button>
-    <button class="ibtn" id="mbtn" aria-expanded="false" aria-controls="menu">Menu</button>
+<div id="caption" class="caption" aria-live="polite">
+  <p id="capSec" class="sec"></p>
+  <p id="capSub" class="sub"></p>
+  <p id="capDet" class="det"></p>
+  <div id="finale" class="finale" hidden>
+    <a class="cta" href="https://www.linkedin.com/in/anusha-karwa-945300223" target="_blank" rel="noopener">Connect on LinkedIn</a>
+    <button class="cta ghost" id="replay">Watch again</button>
+    <a class="cta ghost" href="/journey">Take the river journey</a>
   </div>
-</header>
-
-<div id="menu" hidden>
-  <button class="ibtn close" id="mclose">Close</button>
-  <nav aria-label="Chapters">
-    <button data-chap="0"><small>I</small>Roots</button>
-    <button data-chap="1"><small>II</small>The Current</button>
-    <button data-chap="2"><small>III</small>The Meadow</button>
-    <button data-chap="3"><small>IV</small>The Falls</button>
-    <button data-chap="4"><small>V</small>The Lake</button>
-    <button data-chap="5"><small>VI</small>Lanterns</button>
-    <button data-reader><small>Aa</small><span id="readerLabel">Read as a page</span></button>
-  </nav>
 </div>
 
-<div id="hero" aria-hidden="true">
-  <h1 id="heroName">Anusha Karwa</h1>
-  <p>Engineer · Builder · Pune</p>
-  <p class="hint">sit back, it drifts on its own</p>
+<div id="ui">
+  <header>
+    <span class="brand">ak.</span>
+    <span id="chapter" class="chapter">Anusha Karwa</span>
+    <nav class="hbtns">
+      <button class="pill" id="resBtn" aria-expanded="false" aria-controls="resume">Résumé</button>
+      <a class="pill" href="/journey">River journey</a>
+      <button class="pill" id="snd" aria-pressed="false">Sound off</button>
+    </nav>
+  </header>
+  <footer>
+    <button class="pill round" id="prev" aria-label="Previous">&#8592;</button>
+    <button class="pill" id="pp" aria-pressed="false">Pause</button>
+    <button class="pill round" id="next" aria-label="Next">&#8594;</button>
+    <div id="progress" class="progress" role="slider" aria-label="Timeline"><span id="bar"></span></div>
+  </footer>
 </div>
 
-<!-- Every note: data-p = visible range of the journey (0–1), data-a = where it is pinned
-     (right, up, ahead) relative to the boat at the end of that range, data-side = which way the text hangs. -->
-<main id="notes">
-  <div class="note chap" data-p="0.0515,0.0790" data-a="0,13,46" data-side="c"><span class="meta">Chapter I · Morning</span><h2>Roots</h2><p>education</p></div>
-  <div class="note" data-p="0.0820,0.1095" data-a="-9,5,15" data-side="r"><span class="meta">18.52° N, 73.86° E · Pune</span><h3>Hi, I'm Anusha.</h3><p>Computer science engineer. A year building payment systems at Mastercard. Now at Mesa School of Business, heading into AI product management.</p></div>
-  <div class="note" data-p="0.1125,0.1400" data-a="9,7,16" data-side="l"><span class="meta">Education · ongoing</span><h3>PGP in Startup Leadership</h3><p>Mesa School of Business · full time</p></div>
-  <div class="note" data-p="0.1430,0.1705" data-a="-8,9,17" data-side="r"><span class="meta">Education · 2025</span><h3>B.Tech, Computer Science</h3><p>MKSSS's CCOEW, Pune · CGPA <b>8.40</b></p></div>
-  <div class="note" data-p="0.1735,0.2010" data-a="10,5,15" data-side="l"><span class="meta">Education · 2021</span><h3>Class XII (HSC)</h3><p>Late P Jog College of Science, Pune · <b>92.5%</b></p></div>
-  <div class="note" data-p="0.2040,0.2315" data-a="-9,5,15" data-side="r"><span class="meta">Education · 2019</span><h3>Class X (CBSE)</h3><p>Jnana Prabodhini Prashala · <b>95.2%</b></p></div>
-  <div class="note chap" data-p="0.2385,0.2715" data-a="0,13,46" data-side="c"><span class="meta">Chapter II · Midday</span><h2>The Current</h2><p>where I've worked</p></div>
-  <div class="note" data-p="0.2745,0.3075" data-a="-9,5,15" data-side="r"><span class="meta">Jun 2025 – Aug 2026</span><h3>Mastercard · Core Payment Services</h3><p>Mission-critical payment infrastructure for high-volume transaction flows and risk analytics.</p></div>
-  <div class="note" data-p="0.3105,0.3435" data-a="9,7,16" data-side="l"><span class="meta">Mastercard · Core Payment Services</span><h3>Data, decisions, delivery</h3><p>Improved data visibility and decision-making pipelines for internal stakeholders. Coded transactions to client requirements and tested them end to end.</p></div>
-  <div class="note" data-p="0.3465,0.3795" data-a="-8,9,17" data-side="r"><span class="meta">IBM · Project Intern · Aug – Dec 2024</span><h3>PII detection at scale</h3><p>Scans large volumes of PDFs, images and documents for sensitive data, cutting manual compliance effort. EasyOCR + Microsoft Presidio with custom rules: <b>94%</b> accuracy, compliance-ready reports.</p></div>
-  <div class="note" data-p="0.3825,0.4155" data-a="10,5,15" data-side="l"><span class="meta">Mastercard · Summer Intern · May – Jul 2024</span><h3>Real-time risk data export</h3><p>Built and deployed with Keystone.js and MongoDB: development, testing and production in <b>2 months</b>. Containerized testing and parallel environments lifted reliability to <b>96%</b>.</p></div>
-  <div class="note chap" data-p="0.4235,0.4498" data-a="0,13,46" data-side="c"><span class="meta">Chapter III · Afternoon</span><h2>The Meadow</h2><p>leadership & business</p></div>
-  <div class="note" data-p="0.4528,0.4792" data-a="-9,5,15" data-side="r"><span class="meta">Entrepreneurship Club · PR Head · Aug – Dec 2024</span><h3><span class="num">15+</span> brand partnerships</h3><p>Directed a 10-member PR division. Closed partnerships worth <b>₹1L+</b>, onboarded startup founders and Shark Tank speakers, and drove sponsorship strategy for flagship events.</p></div>
-  <div class="note" data-p="0.4822,0.5085" data-a="9,7,16" data-side="l"><span class="meta">Entrepreneurship Club · PR Head</span><h3>A Pune-wide ecosystem</h3><p>Partnered with <b>10+</b> entrepreneurship clubs, organised a Pune-wide founder networking meetup and secured TiE mentorship for hackathons.</p></div>
-  <div class="note" data-p="0.5115,0.5378" data-a="-8,9,17" data-side="r"><span class="meta">Entrepreneurship Club · PR Member</span><h3>On the ground</h3><p>Pitched <b>30+</b> startups, local brands and founders. Cold calls, vendor visits and campus activations across 5+ events, reaching <b>500+</b> students.</p></div>
-  <div class="note" data-p="0.5408,0.5672" data-a="10,5,15" data-side="l"><span class="meta">Debate Club · Graphics Head · Aug – Dec 2024</span><h3>Registrations up <span class="num">40%</span></h3><p>Built and led the creative team. Directed 5 debate campaigns and lifted average post reach to <b>5,000+</b> impressions.</p></div>
-  <div class="note" data-p="0.5702,0.5965" data-a="-9,5,15" data-side="r"><span class="meta">Debate Club · Graphics Member</span><h3>20+ creatives</h3><p>Designed creatives in Canva and Photoshop for debates and speaker announcements, helping drive <b>300+</b> participant registrations.</p></div>
-  <div class="note chap" data-p="0.6035,0.6252" data-a="0,13,46" data-side="c"><span class="meta">Chapter IV · Sunset</span><h2>The Falls</h2><p>what I've built</p></div>
-  <div class="note" data-p="0.6282,0.6498" data-a="-9,5,15" data-side="r"><span class="meta">Brand & growth</span><h3>PAPYRO · Japanese Stationery & Toys</h3><p>Demo marketing site with 4+ product categories. Instagram reached <b>5,000+</b> accounts worldwide and drew 4 influencers to our DMs.</p></div>
-  <div class="note" data-p="0.6528,0.6745" data-a="9,7,16" data-side="l"><span class="meta">UI/UX demo</span><h3>Mystery Rooms</h3><p>Interactive escape-room booking platform with <b>10+</b> pages, designed for navigation and conversion.</p></div>
-  <div class="note" data-p="0.7235,0.7390" data-a="-9,5,15" data-side="r"><span class="meta">Java · data structures</span><h3>Online Shopping Prototype</h3><p>E-commerce prototype for <b>50+</b> products. Queues, stacks and doubly linked lists for multi-user order processing.</p></div>
-  <div class="note" data-p="0.7420,0.7575" data-a="9,7,16" data-side="l"><span class="meta">MySQL</span><h3>Tour Me · Trip Management</h3><p>Supports <b>10+</b> itineraries, automating bookings, cost estimates and customer planning.</p></div>
-  <div class="note" data-p="0.7605,0.7760" data-a="-8,9,17" data-side="r"><span class="meta">Java · JSP · MySQL</span><h3>Grocery At Your Fingertips</h3><p>Real-time grocery delivery platform with <b>100+</b> products, order tracking and a responsive UI.</p></div>
-  <div class="note" data-p="0.7790,0.7945" data-a="10,5,15" data-side="l"><span class="meta">Machine learning</span><h3>Laptop Price Prediction</h3><p>Decision tree and regression model trained on <b>1,000+</b> laptops. <b>92%</b> accuracy.</p></div>
-  <div class="note chap" data-p="0.8015,0.8210" data-a="0,13,46" data-side="c"><span class="meta">Chapter V · Dusk</span><h2>The Lake</h2><p>wins & skills</p></div>
-  <div class="note" data-p="0.8240,0.8435" data-a="-9,5,15" data-side="r"><span class="meta">Competitions</span><h3>Hackathons</h3><p><b>1st</b> · TiE Business Hackathon: startup expansion and brand growth frameworks.<br>Smart India Hackathon 2024: Nyaya-Vaani, an AI legal assistant (RAG + NLP).<br><b>1st</b> · Engineer's Monopoly.</p></div>
-  <div class="note" data-p="0.8465,0.8660" data-a="9,7,16" data-side="l"><span class="meta">Achievements</span><h3>Early signals</h3><p>AIR <b>8</b> · NCAT. Bronze, Homi Bhabha Science Exam. PRMO qualified. Maharashtra State Scholarship ranker. District badminton champion, state-level player. Sold <b>250+</b> copies of a student magazine.</p></div>
-  <div class="note" data-p="0.8690,0.8885" data-a="-8,9,17" data-side="r"><span class="meta">Certifications</span><h3>Always learning</h3><p><b>2,000+</b> problems on CodeChef. Amazon ML Summer School 2023. Google Android Compose Camp, 24 badges. Google Foundations of Cybersecurity. IBM Design Thinking. Python &amp; Java, Coding Ninjas.</p></div>
-  <div class="note skill" data-p="0.8915,0.9110" data-a="-13,10,14" data-side="r" data-d="0.0"><span class="meta">Skills · Technical</span><h3>Java · Python · DSA · ML · RAG + NLP · MySQL · MongoDB · Keystone.js · JSP · EasyOCR · Presidio</h3></div>
-  <div class="note skill" data-p="0.8915,0.9110" data-a="12,11,15" data-side="l" data-d="0.4"><span class="meta">Skills · Business</span><h3>Partnerships · Sponsorship · PR · Sales · Brand marketing · Canva · Photoshop</h3></div>
-  <div class="note skill" data-p="0.9140,0.9335" data-a="-13,10,14" data-side="r" data-d="0.0"><span class="meta">Skills · Soft</span><h3>First-principles problem solving · Data-driven decisions · Execution · Stakeholder communication</h3></div>
-  <div class="note skill" data-p="0.9140,0.9335" data-a="12,11,15" data-side="l" data-d="0.4"><span class="meta">Interests</span><h3>Badminton · Strategy games · Art · Travel · Cooking</h3></div>
-  <div class="note chap" data-p="0.9415,0.9580" data-a="0,13,46" data-side="c"><span class="meta">Chapter VI · Night</span><h2>Lanterns</h2><p>what comes next</p></div>
-  <div class="note big" data-p=".960,.979" data-a="0,11,22" data-side="c"><span class="meta">Let's talk</span><h3>Open to AI product roles</h3><p>Fintech, AI products and early-stage startups.</p><div class="links"><a class="cta" href="https://www.linkedin.com/in/anusha-karwa-945300223" target="_blank" rel="noopener">Connect on LinkedIn</a></div></div>
-  <div class="note big" data-p=".982,1.01" data-a="0,16,26" data-side="c"><span class="meta">Anusha Karwa · ak.</span><h3>Thank you for visiting.</h3><button class="plain" id="replay">Start the journey again</button></div>
-</main>
+<section id="resume" hidden aria-label="Résumé">
+  <div class="sheet">
+    <button class="pill close" id="resumeClose">Back to the film</button>
+    <div id="resumeBody"></div>
+  </div>
+</section>
 
-<div id="nav" aria-label="Journey controls">
-  <span id="navCount">01 / 01</span>
-  <button class="ibtn round" id="navUp" aria-label="Previous stop">&#8593;</button>
-  <button class="ibtn round" id="navDown" aria-label="Next stop">&#8595;</button>
-  <button class="ibtn" id="play" aria-pressed="false">Play</button>
-</div>
-
-<script src="/js/boot.js"></script>
-<script type="module" src="/js/main.js"></script>
+<script>
+  window.__bootTimer = setTimeout(function () { document.body.classList.add('resume-only'); }, 20000);
+</script>
+<script type="module" src="/js/film.js"></script>
 </body>
 </html>

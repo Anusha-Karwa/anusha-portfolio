@@ -1,6 +1,9 @@
 # Anusha Karwa · Portfolio
 
-A 3D, scroll-driven portfolio. A paper boat drifts down a river from dawn to lantern-lit night, and each stop reveals part of the résumé: education, experience, leadership, projects, achievements, certifications and skills.
+Two ways to meet Anusha Karwa:
+
+- **Film** (`/`): the full résumé as a cinematic title sequence, extruded 3D gold type on a black stage with light sweeps, gold dust and a scored soundtrack. It plays on its own, one card after another.
+- **River journey** (`/journey`): a paper boat drifts down a river from dawn to lantern-lit night, and each stop reveals part of the résumé.
 
 **Built for the Skillinf Portfolio Design Hackathon 2026.**
 
@@ -29,7 +32,10 @@ Import this repository into [Vercel](https://vercel.com/new). It's a static site
 
 ## Structure
 ```
-index.html      page markup and résumé content
+index.html      film mode (home page)
+css/film.css    film styles
+js/film.js      film timeline, 3D gold type, score
+journey.html    river journey page and résumé content
 css/styles.css  styles and theme tokens
 js/boot.js      fallback to the text résumé if 3D can't start
 js/main.js      3D scene, navigation, sound
