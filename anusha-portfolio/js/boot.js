@@ -1,0 +1,1 @@
+window.__bootTimer = setTimeout(function(){ document.body.classList.add('reader'); document.getElementById('loader').classList.add('gone'); document.getElementById('hdr').classList.add('show'); }, 15000);
