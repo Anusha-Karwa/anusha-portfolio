@@ -520,7 +520,7 @@ const STOPS = (() => {
 })();
 const stopText = STOPS.map(sp => notes.filter(n => sp >= n.a && sp <= n.b).reduce((t, n) => t + n.txt.textContent.length, 0));
 const CFG = { travelK: 42, travelMin: 1.4, travelMax: 4.6, hold: 1, fallDur: 5 };
-let stopIdx = 0, tween = null, pNow = 0, playing = false, holdT = 0;
+let stopIdx = 0, tween = null, pNow = 0, playing = false, holdT = 0, realDt = 0;
 function travelTo(i) {
   i = clamp(i, 0, STOPS.length - 1);
   if (i === stopIdx && !tween) return;
@@ -538,7 +538,7 @@ function updateTravel(dt) {
     pNow = lerp(tween.p0, tween.p1, easeIO(k));
     if (k >= 1) tween = null;
   } else if (playing && introT >= 1) {
-    holdT += dt;
+    holdT += realDt || dt; // reading pauses follow the real clock, even on slow devices
     if (holdT > holdFor(stopIdx)) { if (stopIdx < STOPS.length - 1) travelTo(stopIdx + 1); else setPlaying(false); }
   }
 }
@@ -739,6 +739,7 @@ function begin(sound) {
   $('#loader').classList.add('gone'); $('#hdr').classList.add('show'); $('#nav').classList.add('show');
   if (sound) setSound(true);
   if (reduce) introT = 1;
+  setPlaying(true); // the journey plays itself; any scroll, key or tap takes over
 }
 $('#go').addEventListener('click', () => begin(false));
 $('#goSound').addEventListener('click', () => begin(true));
@@ -855,10 +856,13 @@ if (window.__CAPTURE) {
   };
 } else {
   let last = performance.now();
-  const frame = now => { const dt = Math.min(0.05, (now - last) / 1000); last = now; update(dt); composer.render(); requestAnimationFrame(frame); };
+  const frame = now => { const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now; realDt = Math.min(raw, 0.5); update(dt); composer.render(); requestAnimationFrame(frame); };
   build().then(() => {
     clearTimeout(window.__bootTimer);
     $('#enter').classList.add('ready'); $('#go').focus({ preventScroll: true });
+    // set sail on its own so a visitor can simply watch
+    let n = 4; const tickDown = () => { if (entered) return; if (n === 0) { begin(false); return; } $('#lstat').textContent = `Setting sail in ${n}…`; n--; setTimeout(tickDown, 1000); };
+    tickDown();
   }).catch(err => {
     console.error(err); clearTimeout(window.__bootTimer);
     document.body.classList.add('reader'); reader = true; $('#loader').classList.add('gone'); $('#hdr').classList.add('show');
