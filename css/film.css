@@ -41,9 +41,7 @@ button{font:inherit;color:inherit}
 .textlink{all:unset;cursor:pointer;color:var(--muted);font-size:.85rem;text-decoration:underline;text-underline-offset:4px}
 
 /* captions, set like film credits */
-.caption{position:fixed;left:50%;top:60%;transform:translateX(-50%);z-index:5;width:min(860px,calc(100vw - 32px));text-align:center;pointer-events:none;display:grid;gap:10px}
-.caption.k-title{top:66%}
-.caption.k-intro,.caption.k-final{top:62%}
+.caption{position:fixed;left:50%;top:60%;transform:translateX(-50%);transition:top .5s ease,left .5s ease;z-index:5;width:min(860px,calc(100vw - 32px));text-align:center;pointer-events:none;display:grid;gap:10px}
 .caption p{margin:0;opacity:0;transform:translateY(10px);filter:blur(6px);transition:opacity .5s,transform .7s cubic-bezier(.2,.7,.2,1),filter .6s,letter-spacing 1.2s}
 .caption.in p{opacity:1;transform:none;filter:none}
 .caption .sec:empty{display:none}
@@ -100,7 +98,6 @@ body.resume-only #resume{display:block!important}
 @media (max-width:640px){
   .chapter{display:none}
   .hbtns a.pill{display:none}
-  .caption{top:58%}
   .caption .det{font-size:.8rem}
 }
 @media (prefers-reduced-motion:reduce){ .caption p{transition:opacity .3s} .lbar i{animation:none} }

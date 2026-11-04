@@ -8,6 +8,7 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { makeProp } from './props.js';
 
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
@@ -58,11 +59,14 @@ const CARDS = [
   I('Skills', 'INTERESTS', 'Badminton · Strategy games', 'Art · Travel · Cooking'),
   { kind: 'final', sec: 'Contact', head: 'ANUSHA KARWA', sub: 'Open to AI product roles', det: 'Fintech · AI products · early-stage startups' }
 ];
+const PROPS = ['', 'crown', 'rocket', 'books', 'medal', 'crown', 'card', 'scan', 'bars', 'crown', 'coins', 'megaphone', 'bars', 'crown', 'scales', 'laptop', 'crates', 'globe', 'blocks', 'key', 'planes', 'crown', 'trophy', 'medal', 'orbit', 'magazines', 'crown', 'hex', 'books', 'crown', 'orbit', 'coins', 'megaphone', 'planes', 'crown'];
 const STYLES = ['push', 'rise', 'slide', 'burst', 'swing'];
 let tt = 0;
 CARDS.forEach((c, i) => {
   const words = (c.sub + ' ' + c.det).length;
-  c.dur = c.kind === 'title' ? 1.5 : c.kind === 'intro' ? 5.4 : c.kind === 'final' ? 9999 : clamp(2.0 + words * 0.015, 2.3, 3.7);
+  c.dur = c.kind === 'title' ? 1.15 : c.kind === 'intro' ? 4.3 : c.kind === 'final' ? 9999 : clamp(1.7 + words * 0.012, 2.0, 2.9);
+  c.prop = PROPS[i];
+  c.pos = new THREE.Vector3(Math.sin(i * 1.3) * 7, Math.sin(i * 0.8) * 2.5, -i * 34);
   c.style = c.kind === 'item' ? STYLES[i % STYLES.length] : c.kind;
   c.t0 = tt; tt += c.kind === 'final' ? 0 : c.dur;
 });
@@ -91,8 +95,8 @@ composer.addPass(grade);
 
 scene.add(new THREE.AmbientLight(0x3a2a1a, 0.6));
 const key = new THREE.PointLight(0xffe2a8, 300, 60, 1.6); scene.add(key);
-const rim = new THREE.DirectionalLight(0xff6a3a, 1.4); rim.position.set(-6, 4, -8); scene.add(rim);
-const fill = new THREE.DirectionalLight(0xfff1d6, 0.8); fill.position.set(4, 3, 10); scene.add(fill);
+const rim = new THREE.DirectionalLight(0xff6a3a, 1.4); rim.position.set(-6, 4, -8); scene.add(rim, rim.target);
+const fill = new THREE.DirectionalLight(0xfff1d6, 0.8); fill.position.set(4, 3, 10); scene.add(fill, fill.target);
 
 /* soft textures */
 const puff = (inner = 0.0) => { const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'); const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(inner, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); };
@@ -108,11 +112,12 @@ const flare = new THREE.Sprite(new THREE.SpriteMaterial({ map: puff(0.02), color
 const rayMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, uniforms: { uT: { value: 0 }, uI: { value: 0.5 } },
   vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
   fragmentShader: `uniform float uT, uI; varying vec2 vUv; void main(){ float a = smoothstep(0.0, 0.5, vUv.x) * smoothstep(1.0, 0.5, vUv.x) * smoothstep(0.0, 1.0, vUv.y); a *= 0.55 + 0.45 * sin(uT * 0.6 + vUv.x * 7.0); gl_FragColor = vec4(vec3(1.0, 0.78, 0.45) * a * 0.07 * uI, 1.0); }` });
-for (let i = 0; i < 7; i++) { const m = new THREE.Mesh(new THREE.PlaneGeometry(2 + R() * 3, 40), rayMat); m.position.set((i - 3) * 4 + (R() - .5) * 2, 6, -18 - R() * 6); m.rotation.z = (i - 3) * 0.09; scene.add(m); }
+const rayGroup = new THREE.Group(); scene.add(rayGroup);
+for (let i = 0; i < 7; i++) { const m = new THREE.Mesh(new THREE.PlaneGeometry(2 + R() * 3, 40), rayMat); m.position.set((i - 3) * 4 + (R() - .5) * 2, 6, (R() - .5) * 6); m.rotation.z = (i - 3) * 0.09; rayGroup.add(m); }
 
 /* gold dust everywhere, plus a few large bokeh discs */
 const dN = 2600, dp = new Float32Array(dN * 3), dph = new Float32Array(dN);
-for (let i = 0; i < dN; i++) { dp.set([(R() - .5) * 60, (R() - .5) * 34, -30 + R() * 40], i * 3); dph[i] = R(); }
+for (let i = 0; i < dN; i++) { dp.set([(R() - .5) * 60, (R() - .5) * 34, (R() - .5) * 50], i * 3); dph[i] = R(); }
 const dg = new THREE.BufferGeometry(); dg.setAttribute('position', new THREE.BufferAttribute(dp, 3)); dg.setAttribute('aP', new THREE.BufferAttribute(dph, 1));
 const dustMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { uT: { value: 0 }, uH: { value: innerHeight }, uI: { value: 1 } },
   vertexShader: `attribute float aP; uniform float uT, uH, uI; varying float vA; void main(){ vec3 p = position; p.y += mod(uT * (0.25 + aP * 0.5) + aP * 34.0, 34.0) - 17.0 - position.y * 0.0; p.x += sin(uT * 0.4 + aP * 30.0) * 0.6;
@@ -141,27 +146,29 @@ function textMesh(str, size) {
 }
 function buildCard(c) {
   if (c.group) return c.group;
-  const grp = new THREE.Group(); const maxW = visibleW() * (camera.aspect < 1 ? 0.8 : 0.76);
+  const grp = new THREE.Group(), type = new THREE.Group(); grp.add(type);
+  const vw = visibleW(), maxW = vw * (camera.aspect < 1 ? 0.8 : 0.76);
   const size = c.kind === 'title' ? 1.55 : c.kind === 'intro' || c.kind === 'final' ? 1.35 : 1.2;
-  let lines = [c.head];
-  let m = textMesh(c.head, size), w = m.geometry.boundingBox.max.x - m.geometry.boundingBox.min.x;
-  if (w > maxW * 1.35 && c.head.includes(' ')) {
-    const words = c.head.split(' ').filter(Boolean), mid = Math.ceil(words.length / 2);
-    lines = [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
-    m.geometry.dispose();
-  } else lines = null;
-  if (lines) {
-    const ms = lines.map(l => textMesh(l, size)); const ws = ms.map(x => x.geometry.boundingBox.max.x - x.geometry.boundingBox.min.x);
-    w = Math.max(...ws); ms.forEach((x, i) => { x.position.y = (0.5 - i) * size * 1.35; grp.add(x); });
-  } else grp.add(m);
-  grp.userData.fit = Math.min(1, maxW / w);
-  grp.userData.lines = lines ? 2 : 1;
+  let m = textMesh(c.head, size), w = m.geometry.boundingBox.max.x - m.geometry.boundingBox.min.x, lines = null;
+  if (w > maxW * 1.35 && c.head.includes(' ')) { const words = c.head.split(' ').filter(Boolean), mid = Math.ceil(words.length / 2); lines = [words.slice(0, mid).join(' '), words.slice(mid).join(' ')]; m.geometry.dispose(); m.material.dispose(); }
+  if (lines) { const ms = lines.map(l => textMesh(l, size)); w = Math.max(...ms.map(x => x.geometry.boundingBox.max.x - x.geometry.boundingBox.min.x)); ms.forEach((x, i) => { x.position.y = (0.5 - i) * size * 1.35; type.add(x); }); } else type.add(m);
+  const fit = Math.min(1, maxW / w); type.scale.setScalar(fit);
   const rule = new THREE.Mesh(new THREE.BoxGeometry(1, 0.035, 0.035), new THREE.MeshBasicMaterial({ color: new THREE.Color('#b0141e').multiplyScalar(1.6), transparent: true }));
-  rule.position.y = -(lines ? size * 1.35 : size * 0.75) - 0.2; grp.add(rule); grp.userData.rule = rule; grp.userData.w = w;
-  grp.visible = false; scene.add(grp); c.group = grp; return grp;
+  rule.position.y = -(lines ? size * 1.35 : size * 0.75) - 0.2; type.add(rule);
+  // the prop: beside the type when there is room, otherwise above it; behind it on chapter titles
+  const prop = c.prop ? makeProp(c.prop) : null, textW = w * fit;
+  let layout = 'none';
+  if (prop) {
+    const holder = new THREE.Group(); holder.add(prop.g); grp.add(holder); // the holder sets layout; the prop animates itself inside it
+    if (c.kind === 'title' || c.kind === 'final') { layout = 'behind'; holder.position.set(0, 0, -3); holder.scale.setScalar(c.kind === 'final' ? 1.7 : 1.5); }
+    else if (textW + 5.2 < vw * 0.9) { layout = 'side'; const side = c.pos.x > 0 ? -1 : 1; const total = textW + 5.2; type.position.x = -side * (total / 2 - textW / 2); holder.position.set(side * (total / 2 - 2.1), 0.2, 0.5); }
+    else { layout = 'above'; holder.position.set(0, camera.aspect < 1 ? 2.3 : 2.2, -0.5); holder.scale.setScalar(camera.aspect < 1 ? 0.5 : 0.62); type.position.y = camera.aspect < 1 ? -0.7 : -1.15; }
+  }
+  grp.userData = { type, rule, w, fit, prop, layout, baseX: type.position.x, baseY: type.position.y };
+  grp.position.copy(c.pos); grp.visible = false; scene.add(grp); c.group = grp; return grp;
 }
-function disposeCard(c) { if (!c.group) return; c.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); scene.remove(c.group); c.group = null; }
-function setOpacity(grp, a) { grp.traverse(o => { if (o.material) o.material.opacity = a; }); }
+function disposeCard(c) { if (!c.group) return; c.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && !o.material._shared) o.material.dispose(); }); scene.remove(c.group); c.group = null; }
+function setOpacity(grp, a) { grp.traverse(o => { if (o.material && o.material.transparent !== undefined && o.isMesh && !o.material._shared) o.material.opacity = a; }); }
 
 /* intro: gold dust gathers into a monogram */
 let mono = null;
@@ -169,7 +176,7 @@ function monogramPoints() {
   const c = document.createElement('canvas'); c.width = 420; c.height = 260; const g = c.getContext('2d'); g.fillStyle = '#fff'; g.font = 'italic 600 220px "Cormorant Garamond", Georgia, serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('ak.', 210, 120);
   const d = g.getImageData(0, 0, 420, 260).data, pts = []; for (let y = 0; y < 260; y += 3) for (let x = 0; x < 420; x += 3) if (d[(y * 420 + x) * 4 + 3] > 128) pts.push([(x - 210) * 0.022, (130 - y) * 0.022]);
   const n = pts.length, A = new Float32Array(n * 3), B = new Float32Array(n * 3), D = new Float32Array(n);
-  pts.forEach(([x, y], i) => { const a = R() * 6.28, r = 10 + R() * 18; A.set([Math.cos(a) * r, Math.sin(a) * r * 0.6, -8 + (R() - .5) * 10], i * 3); B.set([x, y, 0], i * 3); D[i] = R(); });
+  pts.forEach(([x, y], i) => { const a = R() * 6.28, r = 10 + R() * 18; A.set([Math.cos(a) * r, Math.sin(a) * r * 0.6, -6 + (R() - .5) * 8], i * 3); B.set([x, y, 0], i * 3); D[i] = R(); });
   const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(B, 3)); geo.setAttribute('aS', new THREE.BufferAttribute(A, 3)); geo.setAttribute('aD', new THREE.BufferAttribute(D, 1));
   const mat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { uK: { value: 0 }, uX: { value: 0 }, uH: { value: innerHeight } },
     vertexShader: `attribute vec3 aS; attribute float aD; uniform float uK, uX, uH; varying float vA; void main(){ float k = clamp((uK - aD * 0.35) / 0.65, 0.0, 1.0); k = 1.0 - pow(1.0 - k, 3.0);
@@ -264,64 +271,78 @@ $('#goSound').addEventListener('click', () => start(true));
 
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight); CARDS.forEach(disposeCard); lastIdx = -1; });
 
-/* ---------- per-frame direction ---------- */
-const tmp = new THREE.Vector3();
+/* ---------- per-frame direction: the camera flies from card to card ---------- */
+const OFF = new THREE.Vector3(0, 0.5, 13), from = new THREE.Vector3(), to = new THREE.Vector3(), look = new THREE.Vector3(), lookFrom = new THREE.Vector3();
+const TRAVEL = 0.6;
 let last = performance.now(), time = 0;
+function camFor(i, out) { const c = CARDS[i]; return out.copy(c.pos).add(OFF); }
 function frame(now) {
   const dt = Math.min(0.1, (now - last) / 1000); last = now; time += dt;
   if (playing) T = Math.min(TOTAL, T + dt);
   const i = cardAt(T), c = CARDS[i], u = T - c.t0, dur = c.kind === 'final' ? 1e9 : c.dur;
   if (i !== lastIdx) {
-    CARDS.forEach((k, j) => { if (j < i - 1 || j > i + 2) disposeCard(k); else if (k.group) k.group.visible = false; });
+    CARDS.forEach((k, j) => { if (j < i - 1 || j > i + 2) disposeCard(k); });
     buildCard(c); showCaption(i); if (playing && started) hit(c.kind); lastIdx = i;
-    setTimeout(() => { if (CARDS[i + 1]) buildCard(CARDS[i + 1]); }, 60);
+    setTimeout(() => { if (CARDS[i + 1]) buildCard(CARDS[i + 1]); }, 30);
+    setTimeout(() => { if (CARDS[i + 2]) buildCard(CARDS[i + 2]); }, 200);
   }
   if (playing && T >= TOTAL) setPlaying(false);
-
-  // caption timing
-  const capIn = c.kind === 'intro' ? u > 3.4 : u > 0.45, capOut = c.kind !== 'final' && u > dur - 0.35;
+  const capIn = c.kind === 'intro' ? u > 2.6 : u > TRAVEL * 0.8, capOut = c.kind !== 'final' && u > dur - 0.25;
   cap.classList.toggle('in', capIn && !capOut);
 
-  // camera: slow push with a drift that changes per card
-  const ph = i * 1.7;
-  camera.position.set(Math.sin(ph) * 0.9 + Math.sin(time * 0.2) * 0.3, Math.cos(ph) * 0.4, 14 - smooth(0, dur, u) * 1.6);
-  camera.lookAt(0, c.kind === 'item' ? 0.6 : 0.3, 0);
-  camera.rotation.z = c.kind === 'title' ? Math.sin(ph) * 0.03 * (1 - smooth(0, 0.9, u)) : 0;
+  // camera flight: swoop from the previous card to this one, banking into the turn, then drift
+  camFor(i, to); look.copy(c.pos);
+  if (i === 0) { from.set(0, 6, 60); lookFrom.set(0, 0, -20); }
+  else { camFor(i - 1, from); lookFrom.copy(CARDS[i - 1].pos); }
+  const travel = reduce ? 1 : (i === 0 ? clamp(u / 2.4, 0, 1) : clamp(u / TRAVEL, 0, 1)), k = travel < 0.5 ? 4 * travel ** 3 : 1 - Math.pow(-2 * travel + 2, 3) / 2;
+  camera.position.lerpVectors(from, to, k); camera.position.y += Math.sin(k * Math.PI) * 1.5;
+  camera.position.z -= Math.max(0, u - TRAVEL) * 0.35;
+  const lk = new THREE.Vector3().lerpVectors(lookFrom, look, Math.min(1, k * 1.3)); camera.lookAt(lk);
+  camera.rotation.z += Math.sin(k * Math.PI) * (to.x - from.x) * -0.012;
 
-  // card motion
-  const g = c.group;
-  if (g) {
-    g.visible = c.kind !== 'intro' || u > 3.0;
-    const fit = g.userData.fit, k = reduce ? 1 : expoOut((u - (c.kind === 'intro' ? 3.0 : 0)) / 0.9), out = c.kind === 'final' ? 0 : smooth(dur - 0.45, dur, u);
-    g.position.set(0, c.kind === 'item' ? 1.2 : 0.4, 0); g.rotation.set(0, 0, 0); g.scale.setScalar(fit);
-    const st = reduce ? 'fade' : c.style;
-    if (st === 'push' || st === 'title' || st === 'intro' || st === 'final') { g.position.z = lerp(-34, 0, k); g.rotation.y = lerp(0.35, 0, k) * (i % 2 ? 1 : -1); }
-    else if (st === 'rise') { g.position.y += lerp(-5, 0, k); g.rotation.x = lerp(-1.3, 0, k); }
-    else if (st === 'slide') { g.position.x = lerp(visibleW() * 0.9, 0, k); g.rotation.y = lerp(-0.9, 0, k); }
-    else if (st === 'swing') { g.rotation.y = lerp(Math.PI * 0.55, 0, backOut((u) / 1.0)); }
-    else if (st === 'burst') { g.scale.setScalar(fit * lerp(1.8, 1, backOut(u / 0.6))); }
-    g.position.z += u * 0.25 - out * 6; g.rotation.y += Math.sin(time * 0.6) * 0.04;
-    setOpacity(g, clamp(k * 1.4, 0, 1) * (1 - out));
-    const rule = g.userData.rule; rule.scale.x = Math.max(0.001, g.userData.w * 0.6 * smooth(0.5, 1.3, u) * (1 - out)); rule.visible = c.kind !== 'intro' || u > 3.6;
+  // cards: the current one makes its entrance; the next ones wait in the dark, props already turning
+  for (let j = Math.max(0, i - 1); j <= Math.min(CARDS.length - 1, i + 2); j++) {
+    const cj = CARDS[j], g = cj.group; if (!g) continue;
+    const ud = g.userData, uj = j === i ? u : j < i ? T - cj.t0 : 0, isCur = j === i;
+    g.visible = j !== 0 || true;
+    const tg = ud.type;
+    tg.position.set(ud.baseX, ud.baseY, 0); tg.rotation.set(0, 0, 0);
+    const startU = cj.kind === 'intro' ? 2.4 : TRAVEL * 0.35;
+    const e = isCur ? (reduce ? 1 : expoOut((uj - startU) / 0.7)) : j < i ? 1 : 0;
+    const st = reduce ? 'fade' : cj.style;
+    if (st === 'push' || st === 'title' || st === 'intro' || st === 'final') { tg.position.z = lerp(-26, 0, e); }
+    else if (st === 'rise') { tg.position.y += lerp(-4, 0, e); tg.rotation.x = lerp(-1.3, 0, e); }
+    else if (st === 'slide') { tg.position.x += lerp(12, 0, e); tg.rotation.y = lerp(-0.9, 0, e); }
+    else if (st === 'swing') { tg.rotation.y = lerp(Math.PI * 0.55, 0, backOut((uj - startU) / 0.8)); }
+    else if (st === 'burst') { tg.scale.setScalar(ud.fit * lerp(1.8, 1, backOut((uj - startU) / 0.5))); }
+    if (st !== 'burst') tg.scale.setScalar(ud.fit);
+    tg.rotation.y += Math.sin(time * 0.6 + j) * 0.05;
+    tg.traverse(o => { if (o.isMesh) o.material.opacity = j > i ? 0 : clamp(e * 1.4, 0, 1); });
+    ud.rule.scale.x = Math.max(0.001, ud.w * 0.6 * (isCur ? smooth(startU + 0.3, startU + 0.9, uj) : j < i ? 1 : 0));
+    if (ud.prop) ud.prop.up(j > i ? 0.0001 : Math.max(0.0001, uj - (cj.kind === 'intro' ? 2.4 : TRAVEL * 0.2)), time);
+    if (ud.prop) ud.prop.g.visible = j <= i;
   }
-  // the key light sweeps across the type for the glint
-  const sweep = smooth(0.4, Math.min(dur, 3.2), u);
-  key.position.set(lerp(-16, 16, sweep), 4, 9); key.intensity = 140 + Math.sin(sweep * Math.PI) * 160;
-  streak.material.opacity = Math.sin(clamp((u - 0.3) / 1.0, 0, 1) * Math.PI) * (c.kind === 'item' ? 0.22 : 0.6);
-  streak.position.set(lerp(-8, 8, sweep), c.kind === 'item' ? 1.2 : 0.4, 2);
-  flare.material.opacity = streak.material.opacity * 0.6; flare.position.set(streak.position.x, streak.position.y, 2.5); flare.scale.setScalar(2.4 + Math.sin(time * 8) * 0.2);
-  glow.material.opacity = (c.kind === 'title' || c.kind === 'final' ? 0.75 : 0.32) * (0.85 + 0.15 * Math.sin(time * 1.5));
-  rayMat.uniforms.uT.value = time; rayMat.uniforms.uI.value = c.kind === 'item' ? 0.6 : 1.1;
-  dustMat.uniforms.uT.value = time;
-  bokeh.forEach(b => { const d = b.userData; b.position.set(d.x + Math.sin(time * 0.1 + d.ph) * 2, d.y + Math.cos(time * 0.13 + d.ph) * 1.5, d.z); b.scale.setScalar(d.s); });
-  // sparks for bursts and section titles
-  const sparkT = c.style === 'burst' || c.kind === 'title' ? u - 0.25 : c.kind === 'intro' ? u - 3.0 : 9;
-  sparkMat.uniforms.uK.value = sparkT < 0 ? 9 : sparkT; sparks.position.set(0, c.kind === 'item' ? 1.2 : 0.4, 0.5);
-  // intro: dust gathers into "ak.", flashes, then the name arrives
-  if (mono) { const intro = c.kind === 'intro'; mono.visible = intro; if (intro) { mono.material.uniforms.uK.value = clamp(u / 2.4, 0, 1); mono.material.uniforms.uX.value = smooth(2.7, 3.3, u); } }
-  grade.uniforms.uT.value = time; grade.uniforms.uFade.value = started ? lerp(0.25, 1, smooth(startTime, startTime + 1.2, time)) : 0.25;
 
-  const pct = T / TOTAL * 100; $('#bar').style.width = pct + '%';
+  // light: a key light sweeps across the current card for the glint
+  const sweep = smooth(0.3, Math.min(dur, 2.6), u);
+  key.position.set(c.pos.x + lerp(-14, 14, sweep), c.pos.y + 4, c.pos.z + 9); key.intensity = 140 + Math.sin(sweep * Math.PI) * 160;
+  rim.position.set(c.pos.x - 6, c.pos.y + 4, c.pos.z - 8); rim.target.position.copy(c.pos); fill.position.set(c.pos.x + 4, c.pos.y + 3, c.pos.z + 10); fill.target.position.copy(c.pos);
+  streak.material.opacity = Math.sin(clamp((u - 0.4) / 0.9, 0, 1) * Math.PI) * (c.kind === 'item' ? 0.2 : 0.6);
+  streak.position.set(c.pos.x + lerp(-8, 8, sweep), c.pos.y + 0.2, c.pos.z + 2);
+  flare.material.opacity = streak.material.opacity * 0.6; flare.position.set(streak.position.x, streak.position.y, c.pos.z + 2.5);
+  glow.position.set(c.pos.x, c.pos.y, c.pos.z - 6); glow.material.opacity = (c.kind === 'title' || c.kind === 'final' ? 0.75 : 0.35) * (0.85 + 0.15 * Math.sin(time * 1.5));
+  rayGroup.position.set(camera.position.x, 0, camera.position.z - 22); rayMat.uniforms.uT.value = time; rayMat.uniforms.uI.value = c.kind === 'item' ? 0.6 : 1.1;
+  dust.position.set(camera.position.x, camera.position.y, camera.position.z - 14); dustMat.uniforms.uT.value = time;
+  bokeh.forEach(b => { const d = b.userData; b.position.set(camera.position.x + d.x + Math.sin(time * 0.1 + d.ph) * 2, camera.position.y + d.y + Math.cos(time * 0.13 + d.ph) * 1.5, camera.position.z + d.z - 10); b.scale.setScalar(d.s); });
+  const sparkT = c.style === 'burst' || c.kind === 'title' ? u - 0.35 : c.kind === 'intro' ? u - 2.4 : 9;
+  sparkMat.uniforms.uK.value = sparkT < 0 ? 9 : sparkT; sparks.position.set(c.pos.x, c.pos.y, c.pos.z + 0.5);
+  if (mono) { const intro = c.kind === 'intro'; mono.visible = intro; if (intro) { mono.position.copy(c.pos); mono.material.uniforms.uK.value = clamp(u / 1.8, 0, 1); mono.material.uniforms.uX.value = smooth(2.0, 2.6, u); } }
+  grade.uniforms.uT.value = time; grade.uniforms.uFade.value = started ? lerp(0.25, 1, smooth(startTime, startTime + 1.0, time)) : 0.25;
+
+  // the caption follows the type: centred under its gold rule
+  if (c.group) { const ud = c.group.userData, p = new THREE.Vector3(), q = new THREE.Vector3(); ud.rule.getWorldPosition(p); ud.type.getWorldPosition(q); p.project(camera); q.project(camera);
+    cap.style.top = clamp((1 - p.y) / 2 * 100 + 2.2, 30, 80) + '%'; cap.style.left = clamp((q.x + 1) / 2 * 100, 25, 75) + '%'; cap.style.width = ud.layout === 'side' ? 'min(560px, 52vw)' : 'min(860px, calc(100vw - 32px))'; }
+  $('#bar').style.width = (T / TOTAL * 100) + '%';
   composer.render(); requestAnimationFrame(frame);
 }
 
